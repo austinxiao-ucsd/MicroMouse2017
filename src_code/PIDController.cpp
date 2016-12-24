@@ -1,7 +1,13 @@
+/**
+    PIDController.cpp
+    Purpose: Implements PIDController.h
+
+    @author Hongda Xiao
+    @version 1.0 12/24/2016
+*/
+
 #include "PIDController.h"
-
-#include <mbed.h>
-
+    
 PIDController::PIDController(float curr_kp, float curr_ki, float curr_kd, float temp_i_upper_bound,
                              float temp_i_lower_bound) {
   kp = curr_kp;
