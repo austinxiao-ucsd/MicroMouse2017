@@ -1,6 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <list>
+#include <vector>
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -19,6 +22,7 @@ class Parser{
 
   private:
     int iter;
+    vector<string> split(const string &s, char delim);
 };
 
 Parser::Parser(void){
@@ -31,10 +35,18 @@ Parser::Parser(void){
   while (getline(input_stream, line)) {
     cout << "Line" << line<<endl;
     struct SensorData currentdata;
-    currentdata.cell_x = line[0];
-    currentdata.cell_y = line[1];
-    currentdata.left = line[2];
-    currentdata.right = line[3];
+
+    string buf;
+    stringstream ss(line);
+    vector<string> splitted;
+    while (ss >> buf){
+      splitted.push_back(buf);
+    }
+
+    currentdata.cell_x = stod(splitted[0]);
+    currentdata.cell_y = stod(splitted[1]);
+    currentdata.left = stod(splitted[2]);
+    currentdata.right = stod(splitted[3]);
     cout<< currentdata.cell_x<<" "<<currentdata.cell_y<<" "<<currentdata.left << " " << currentdata.left<<endl;
     data.push_back(currentdata);
   }
