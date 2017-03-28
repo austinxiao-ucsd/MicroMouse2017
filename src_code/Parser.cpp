@@ -18,7 +18,8 @@ class Parser{
   public:
     Parser();
     list<SensorData> data;
-    SensorData getnext();
+    bool hasNext();
+    SensorData getNext();
 
   private:
     int iter;
@@ -62,7 +63,11 @@ Parser::Parser(void){
   }
 }
 
-SensorData Parser::getnext(){
+bool Parser::hasNext(){
+  return (iter<data.size());
+}
+
+SensorData Parser::getNext(){
   struct SensorData toreturn;
   unsigned N = iter;
   if (data.size() > N){
