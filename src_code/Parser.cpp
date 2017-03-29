@@ -19,7 +19,9 @@ class Parser{
     Parser();
     list<SensorData> data;
     bool hasNext();
-    SensorData getNext();
+    void next();
+    double getLeft();
+    double getRight();
 
   private:
     int iter;
@@ -56,8 +58,8 @@ Parser::Parser(void){
 
   for (int i = 0; i < data.size(); i++) {
     unsigned N = iter;
-    std::list<SensorData>::iterator it = data.begin();
-    std::advance(it, N);
+    list<SensorData>::iterator it = data.begin();
+    advance(it, N);
     cout<< it->left<<" " << it->right<<endl;
     iter += 1;
   }
@@ -67,17 +69,28 @@ bool Parser::hasNext(){
   return (iter<data.size());
 }
 
-SensorData Parser::getNext(){
+void Parser::next(){
   struct SensorData toreturn;
   unsigned N = iter;
   if (data.size() > N){
-    std::list<SensorData>::iterator it = data.begin();
-    std::advance(it, N);
+    list<SensorData>::iterator it = data.begin();
+    advance(it, N);
     toreturn = *it;
     iter += 1;
   }
   else{
     cout<<"End of List"<<endl;
   }
-  return toreturn;
+}
+
+double Parser::getLeft(){
+  list<SensorData>::iterator it = data.begin();
+  advance(it, iter);
+  return it->left;
+}
+
+double Parser::getRight(){
+  list<SensorData>::iterator it = data.begin();
+  advance(it, iter);
+  return it->right;
 }
