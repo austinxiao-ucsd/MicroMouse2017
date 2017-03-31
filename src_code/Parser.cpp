@@ -17,11 +17,14 @@ struct SensorData{
 class Parser{
   public:
     Parser();
-    list<SensorData> data;
-    bool hasNext();
+    //list<SensorData> data;
+    vector<SensorData> data;
+    vector<double> errors;
+    bool has_next();
     void next();
-    double getLeft();
-    double getRight();
+    double get_left();
+    double get_right();
+    void write();
 
   private:
     int iter;
@@ -33,11 +36,10 @@ Parser::Parser(void){
   string file_name = "input.dat";
   ifstream input_stream(file_name);
   if (!input_stream) cerr << "Can't open input file!";
-  list<SensorData> sensor_data;
   string line;
   while (getline(input_stream, line)) {
     cout << "Line" << line<<endl;
-    struct SensorData currentdata;
+    struct SensorData current_data;
 
     string buf;
     stringstream ss(line);
@@ -46,36 +48,39 @@ Parser::Parser(void){
       splitted.push_back(buf);
     }
 
-    currentdata.cell_x = stod(splitted[0]);
-    currentdata.cell_y = stod(splitted[1]);
-    currentdata.left = stod(splitted[2]);
-    currentdata.right = stod(splitted[3]);
-    cout<< currentdata.cell_x<<" "<<currentdata.cell_y<<" "<<currentdata.left << " " << currentdata.left<<endl;
-    data.push_back(currentdata);
+    current_data.cell_x = stod(splitted[0]);
+    current_data.cell_y = stod(splitted[1]);
+    current_data.left = stod(splitted[2]);
+    current_data.right = stod(splitted[3]);
+    cout<< current_data.cell_x<<" "<<current_data.cell_y<<" "<<current_data.left << " " << current_data.left<<endl;
+    data.push_back(current_data);
   }
 
   cout << "Parser: constructor" << endl;
 
   for (int i = 0; i < data.size(); i++) {
-    unsigned N = iter;
-    list<SensorData>::iterator it = data.begin();
-    advance(it, N);
-    cout<< it->left<<" " << it->right<<endl;
+    //unsigned N = iter;
+    //list<SensorData>::iterator it = data.begin();
+    //advance(it, N);
+    
+    //cout<< it->left<<" " << it->right<<endl;
+    cout<<data[iter].left<<" "<<data[iter].right<<endl;
     iter += 1;
   }
 }
 
-bool Parser::hasNext(){
+bool Parser::has_next(){
   return (iter<data.size());
 }
 
 void Parser::next(){
-  struct SensorData toreturn;
-  unsigned N = iter;
-  if (data.size() > N){
-    list<SensorData>::iterator it = data.begin();
-    advance(it, N);
-    toreturn = *it;
+  struct SensorData to_return;
+  //unsigned N = iter;
+  if (data.size() > iter){
+    //list<SensorData>::iterator it = data.begin();
+    //advance(it, N);
+    //toreturn = *it;
+    to_return = data[iter];
     iter += 1;
   }
   else{
@@ -83,14 +88,22 @@ void Parser::next(){
   }
 }
 
-double Parser::getLeft(){
-  list<SensorData>::iterator it = data.begin();
-  advance(it, iter);
-  return it->left;
+double Parser::get_left(){
+  //list<SensorData>::iterator it = data.begin();
+  //advance(it, iter);
+  //return it->left;
+  return data[iter].left;
 }
 
-double Parser::getRight(){
-  list<SensorData>::iterator it = data.begin();
-  advance(it, iter);
-  return it->right;
+double Parser::get_right(){
+  //list<SensorData>::iterator it = data.begin();
+  //advance(it, iter);
+  //return it->right;
+  return data[iter].right;
 }
+
+void Parser::write(double error_to_write){
+  errors.push_back(error_to_write);
+}
+
+
