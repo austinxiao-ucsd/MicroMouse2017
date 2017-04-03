@@ -5,47 +5,76 @@
  * This class implements the Flood-fill algorithm,
  * constructs and prints the maze structure.
  */
-#include "Maze.h"
+
+#include <string>
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <cstdio>
+#include "Cell.h"
+#include "Mouse.h"
 #include "math.h"
+using namespace std;
 
-// maze predefined size is 16
-Cell * maze[MAZE_SIZE][MAZE_SIZE];
-// resulting path
-vector<Cell*> res;
+const int MAZE_SIZE = 6;
 
-/*
-* Calculates the total number of cells needed to get from a point (x1, y1)
-* to a point (x2, y2).
-*/
-int manhattan_dist(int x1, int x2, int y1, int y2) {
-    return abs(x1 - x2) + abs(y1 - y2);
-}
+/*Calculates the total number of cells needed to get from a point (x1, y1)
+to a point (x2, y2).*/
 
-/*
-* Function that takes the minimum of the four given distances
-*/
-int min4(int a, int b, int c, int d) {
-    int min;
-    (a < b) ? min = a : min = b;
-    if (c < min) min = c;
-    if (d < min) min = d;
-    return min;
-}
 
-/*
-* Initializes the maze using the manhattan distances as the starting distances.
-*/
-void Maze() {
+
+class Maze{
+
+    public: 
+
+        Maze();
+
+        ~Maze();
+
+        void init_maze();
+
+        int manhattan_dist(int x1, int x2, int y1, int y2);
+
+        int min4(int a, int b, int c, int d);
+
+        int min_open_neighbor(vector<Cell*> cells);
+
+        void update_distances(vector<Cell*> &stack);
+
+        bool is_center(Cell* cell);
+
+        void print_maze();
+
+        void print_mouse(); 
+
+        void explore(vector<Cell*> &stack, int y, int x);
+
+        void load_maze(string file_name);
+        
+        Cell* next_move(Cell* cell);
+
+        void print_path();
+
+        Cell * maze[MAZE_SIZE][MAZE_SIZE];
+        
+        vector<Cell*> res;
+};
+
+
+Maze:: Maze(){
     int goal1 = MAZE_SIZE / 2;
     int goal2 = (MAZE_SIZE - 1) / 2;
     for (int i = 0; i < MAZE_SIZE; i++) {
         for (int j = 0; j < MAZE_SIZE; j++) {
-            // Distance of the cell will be the minimum distance to the closest
-            // one out of four middle destination cells.
-            maze[i][j] = new Cell(i, j, min4(manhattan_dist(i, goal1, j, goal1),
+        // Distance of the cell will be the minimum distance to the closest
+        // one out of four middle destination cells.
+
+            int min = min4(manhattan_dist(i, goal1, j, goal1),
                                              manhattan_dist(i, goal1, j, goal2),
                                              manhattan_dist(i, goal2, j, goal1),
-                                             manhattan_dist(i, goal2, j, goal2)));
+                                             manhattan_dist(i, goal2, j, goal2));
+            maze[i][j] = new Cell(i, j, min);
+            //printf("curr min: %d\n", min);
             if (i == MAZE_SIZE - 1) {
                 maze[i][j]->top_wall = true;
             }
@@ -56,8 +85,27 @@ void Maze() {
     }
 }
 
+
+
+int Maze:: manhattan_dist(int x1, int x2, int y1, int y2) {
+    
+    return abs(x1 - x2) + abs(y1 - y2);
+}
+
+
+// Function that takes the minimum of the four given distances
+
+int Maze:: min4(int a, int b, int c, int d) {
+    int min;
+    (a < b) ? min = a : min = b;
+    if (c < min) min = c;
+    if (d < min) min = d;
+    return min;
+}
+
+
 /* Check the minimum from a set of neighboring cells */
-int min_open_neighbor(vector<Cell*> cells) {
+int Maze:: min_open_neighbor(vector<Cell*> cells) {
     int min = UCHAR_MAX;
     for (vector<Cell *>::iterator it = cells.begin(); it != cells.end(); it++) {
         if ((*it)->dist < min) {
@@ -68,7 +116,7 @@ int min_open_neighbor(vector<Cell*> cells) {
 }
 
 /* Determine if the maze center is found. */
-bool is_center(Cell *cell) {
+bool Maze:: is_center(Cell *cell) {
     int x = cell->x;
     int y = cell->y;
     int goal1 = MAZE_SIZE / 2;
@@ -85,7 +133,7 @@ bool is_center(Cell *cell) {
 /*
 * update the distance using a stack
 */
-void update_distances(vector <Cell*> &stack) {
+void Maze:: update_distances(vector <Cell*> &stack) {
     Cell *current;
     vector<Cell*> open_neighbors;
     vector<Cell*> neighbors;
@@ -146,18 +194,27 @@ void update_distances(vector <Cell*> &stack) {
     }
 }
 
-/* Printing the maze */
-void print_maze() {
-
+/*Print the current position of the Mouse as well as it's direction and all 
+* the walls that already been detected
+*/
+void Maze:: print_mouse(){
     // print top wall
+    for (int i = 0; i < MAZE_SIZE; i++) {
+        cout << "+---";
+    }
+    cout << "+";
+
+    printf("   ");
+    
     for (int i = 0; i < MAZE_SIZE; i++) {
         cout << "+---";
     }
     cout << "+\n";
 
-    int rows = MAZE_SIZE + (MAZE_SIZE - 1);
+        int rows = MAZE_SIZE + (MAZE_SIZE - 1);
     int y;
 
+    //first go through rows
     for (int i = 0; i < rows; i++) {
         if (i % 2 == 0) {
             y = MAZE_SIZE - 1 - i / 2;
@@ -185,7 +242,122 @@ void print_maze() {
                 }
 
                 int dist = maze[y][j]->dist;
-                //      printf("   ");
+
+                if (dist > 99) {
+                    printf("%d", dist);
+                }
+                else if (dist > 9) {
+                    printf(" %d", dist);
+                }
+                else {
+                    printf(" %d ", dist);
+                }
+
+                if (maze[y][j]->right_wall || j == MAZE_SIZE - 1) {
+                    printf("|");
+                }
+                else {
+                    printf(" ");
+                }
+            }
+        }
+
+        printf("   ");
+
+        for (int j = 0; j < MAZE_SIZE; j++) {
+
+            if (i % 2 != 0) {
+                if (maze[y][j]->top_wall) {
+                    printf("+---");
+                }
+                else {
+                    printf("+   ");
+                }
+                if (j == MAZE_SIZE - 1) {
+                    printf("+");
+                }
+            }
+
+            else {
+                if (j == 0) {
+                    printf("|");
+                }
+
+                int dist = maze[y][j]->dist;
+
+                printf("   ");
+
+                if (maze[y][j]->right_wall || j == MAZE_SIZE - 1) {
+                    printf("|");
+                }
+                else {
+                    printf(" ");
+                }
+            }
+        }
+        printf("\n");
+    }
+
+
+    //print the bottom
+    for (int i = 0; i < MAZE_SIZE; i++) {
+        printf("+---");
+    }
+    cout << "+";
+
+    printf("   ");
+
+    for (int i = 0; i < MAZE_SIZE; i++) {
+        cout << "+---";
+    }
+
+    printf("+\n\n");
+
+
+
+}
+
+/* Printing the maze */
+void Maze :: print_maze() {
+
+    // print top wall
+    for (int i = 0; i < MAZE_SIZE; i++) {
+        cout << "+---";
+    }
+    cout << "+\n";
+
+    int rows = MAZE_SIZE + (MAZE_SIZE - 1);
+    int y;
+
+    //first go through rows
+    for (int i = 0; i < rows; i++) {
+        if (i % 2 == 0) {
+            y = MAZE_SIZE - 1 - i / 2;
+        }
+        else {
+            y = MAZE_SIZE - 1 - (i / 2 + 1);
+        }
+        for (int j = 0; j < MAZE_SIZE; j++) {
+
+            if (i % 2 != 0) {
+                if (maze[y][j]->top_wall) {
+                    printf("+---");
+                }
+                else {
+                    printf("+   ");
+                }
+                if (j == MAZE_SIZE - 1) {
+                    printf("+");
+                }
+            }
+
+            else {
+                if (j == 0) {
+                    printf("|");
+                }
+
+                int dist = maze[y][j]->dist;
+
                 if (dist > 99) {
                     printf("%d", dist);
                 }
@@ -213,7 +385,7 @@ void print_maze() {
 }
 
 /* Traverse the maze and update the distances. */
-void explore(vector<Cell*> &stack, int y, int x) {
+void Maze:: explore(vector<Cell*> &stack, int y, int x) {
     if (maze[y][x]->visited) {
         return;
     }
@@ -302,7 +474,7 @@ void explore(vector<Cell*> &stack, int y, int x) {
     }
 }
 
-void load_maze(string file_name) {
+void Maze:: load_maze(string file_name) {
     ifstream file(file_name);
     string top, right;
     int row = MAZE_SIZE - 1;
@@ -314,9 +486,11 @@ void load_maze(string file_name) {
         }
         row--;
     }
+
     int goal1 = MAZE_SIZE / 2;
     int goal2 = (MAZE_SIZE - 1) / 2;
     int s = 0;
+
     for (int i = 0; i < MAZE_SIZE; i++) {
         for (int j = 0; j < MAZE_SIZE; j++) {
             // Distance of the cell will be the minimum distance to the closest
@@ -330,7 +504,7 @@ void load_maze(string file_name) {
 }
 
 /* Helper function for path printing. */
-Cell* next_move(Cell *current){
+Cell* Maze:: next_move(Cell *current){
     Cell * min_cell = current;
     int x = current->x, y = current->y;
     // check top
@@ -359,7 +533,7 @@ Cell* next_move(Cell *current){
 
 
 /* Searching for the valid path */
-void print_path(){
+void Maze:: print_path(){
     Cell * curr = maze[0][0];
     while(!is_center(curr)){
         res.push_back(curr);
@@ -375,6 +549,62 @@ void print_path(){
     cout << " End" << endl;
 }
 
+
+
+int Mouse:: get_direction(){
+    return direction;
+}
+
+void Mouse:: set_direction(int dir){
+    direction = dir;
+}
+
+Mouse:: Mouse(){
+    direction = NORTH;
+    mouse_x = 0;
+    mouse_y = 0; 
+}
+
+int main(){
+
+    Maze * reference = new Maze();
+
+    printf("Maze Format: [Row, Col]. Size %d by %d\n", MAZE_SIZE, MAZE_SIZE);
+    
+    cout << "Start at the bottom leftmost corner [0,0]." << endl;
+
+    while(1){
+        cout << "Type in [test1] or [test2] or [size6]" << endl;
+        char tmp[101];
+        scanf("%100s", tmp);
+        string file_name = tmp;
+
+        if(file_name.compare("test1") == 0){
+            reference->load_maze("test1.txt");
+            break;
+        }
+        if(file_name.compare("test2") == 0){
+            reference->load_maze("test2.txt");
+            break;
+        }
+        if(file_name.compare("size6") == 0){
+            reference->load_maze("size6.txt");
+            break;
+        }
+    }
+
+    reference->print_maze();
+
+    cout << "Solving the reference Maze" << endl;
+    std::vector <Cell*> vc;
+    vc.push_back(reference->maze[0][0]);
+    reference->explore(vc, 0, 0);
+    reference->print_maze();
+    cout << "Showing the BEST PATH" << endl;
+    reference->print_path();
+
+    cout << "Now, lets see how our Mouse will solve the Maze:";
+}
 
 
 

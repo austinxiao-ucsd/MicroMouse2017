@@ -1,15 +1,22 @@
-#ifndef __MOUSE_H__
-#define __MOUSE_H__
-class Mouse {
-	//direction of Mouse
-	int north;
-	int west;
-	int south;
-	int east;
+#define NORTH 0;
+#define SOUTH 1;
+#define WEST 2;
+#define EAST 3;
 
-	//the current position of Mouse, should be identical to the Cell'x and y
-	int mouse_x;
-	int mouse_y;
+class Mouse{
+	//direction of Mouse
+
+	public:
+		int direction; //initial direction is north
+
+		//the current position of Mouse, should be identical to the Cell'x and y
+		int mouse_x;
+		int mouse_y;
+		
+		Mouse ();
+		
+		void set_direction(int dir);
+		
+		int get_direction();
 
 };
-#endif
