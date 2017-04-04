@@ -57,7 +57,7 @@ void Maze:: load_maze(string file_name) {
 
     int goal1 = MAZE_SIZE / 2;
     int goal2 = (MAZE_SIZE - 1) / 2;
-    int s = 0;
+ //   int s = 0;
 
     for (int i = 0; i < MAZE_SIZE; i++) {
         for (int j = 0; j < MAZE_SIZE; j++) {
@@ -378,84 +378,121 @@ void Mouse:: print_maze(){
 
 
 bool Mouse:: get_front_sensor_value(){
+
+
+    bool has_wall;
+
 	if(direction == NORTH){
 		if(mouse_x == MAZE_SIZE-1){ //if the mouse is at the topest row;
 			return 1;
 		}
-		return reference_maze->maze[mouse_x][mouse_y]->top_wall;
+
+		has_wall = reference_maze->maze[mouse_x][mouse_y]->top_wall;
+        detected_maze->maze[mouse_x][mouse_y]->top_wall = has_wall;
+
 	}
 	else if(direction == SOUTH){
 		if(mouse_x == 0){
 			return 1;
 		}
-		return reference_maze->maze[mouse_x-1][mouse_y]->top_wall; //its bottom cell's upper wall
-
+		has_wall = reference_maze->maze[mouse_x-1][mouse_y]->top_wall; //its bottom cell's upper wall
+        detected_maze->maze[mouse_x-1][mouse_y]->top_wall = has_wall;
 	}
 	else if(direction == EAST){
 		if(mouse_y == MAZE_SIZE-1)
 			return 1;
-		return reference_maze->maze[mouse_x][mouse_y]->right_wall;
+		
+        has_wall = reference_maze->maze[mouse_x][mouse_y]->right_wall;
+        detected_maze->maze[mouse_x][mouse_y]->right_wall = has_wall;
 	}		
 	else{ //WEST
 		if(mouse_y == 0)
 	 		return 1;
-		return reference_maze->maze[mouse_x][mouse_y-1]->right_wall;
+		has_wall = reference_maze->maze[mouse_x][mouse_y-1]->right_wall;
+        detected_maze->maze[mouse_x][mouse_y-1]->right_wall = has_wall;
 
 	}
+
+    return has_wall;
 }
 
 bool Mouse:: get_left_sensor_value(){
+    bool has_wall;
+
 	if(direction == NORTH){
 		if(mouse_y == 0) //if the mouse is at the left_most column
 			return 1;
-		return reference_maze->maze[mouse_x][mouse_y-1]->right_wall;
+        
+        has_wall = reference_maze->maze[mouse_x][mouse_y-1]->right_wall;
+        detected_maze->maze[mouse_x][mouse_y-1]->right_wall = has_wall;
+
 	}
 	else if(direction == SOUTH){
 		if(mouse_y == MAZE_SIZE-1)
 			return 1;
-		return reference_maze->maze[mouse_x][mouse_y]->right_wall;
+
+        has_wall = reference_maze->maze[mouse_x][mouse_y]->right_wall;
+        detected_maze->maze[mouse_x][mouse_y]->right_wall = has_wall;
 
 	}
 	else if(direction == EAST){
 		if(mouse_x == MAZE_SIZE-1)
 			return 1;
-		return reference_maze->maze[mouse_x][mouse_y]->top_wall;
+
+        has_wall = reference_maze->maze[mouse_x][mouse_y]->top_wall;
+        detected_maze->maze[mouse_x][mouse_y]->top_wall = has_wall;
 
 	}
 	else{
 		if(mouse_x == 0)
 			return 1;
-		return reference_maze->maze[mouse_x-1][mouse_y]->top_wall;
+		has_wall = reference_maze->maze[mouse_x-1][mouse_y]->top_wall;
+        detected_maze->maze[mouse_x-1][mouse_y]->top_wall = has_wall;
 	}
+
+    return has_wall;
 }
 
 
 
 
 bool Mouse:: get_right_sensor_value(){
+
+    bool has_wall;
+
 	if(direction == NORTH){
-		if(mouse_y == MAZE_SIZE-1){ //if the mouse is at the right_most column
+		if(mouse_y == MAZE_SIZE-1) //if the mouse is at the right_most column
 			return 1;
-		}
-		return reference_maze->maze[mouse_x][mouse_y]->right_wall;
+
+		has_wall = reference_maze->maze[mouse_x][mouse_y]->right_wall;
+        detected_maze->maze[mouse_x][mouse_y]->right_wall = has_wall;
+
 	}
 	else if(direction == SOUTH){
 		if(mouse_y == 0)
 			return 1;
-		return reference_maze->maze[mouse_x][mouse_y-1]->right_wall;
+
+		has_wall = reference_maze->maze[mouse_x][mouse_y-1]->right_wall;
+        detected_maze->maze[mouse_x][mouse_y-1]->right_wall = has_wall;
 
 	}
 	else if(direction == EAST){
 		if(mouse_x == 0)
 			return 1;
-		return reference_maze->maze[mouse_x-1][mouse_y]->top_wall;
+
+		has_wall = reference_maze->maze[mouse_x-1][mouse_y]->top_wall;
+        detected_maze->maze[mouse_x-1][mouse_y]->top_wall = has_wall;
 	}
 	else{
 		if(mouse_x == MAZE_SIZE-1)
 			return 1;
-		return reference_maze->maze[mouse_x][mouse_y]->top_wall;
+
+		has_wall = reference_maze->maze[mouse_x][mouse_y]->top_wall;
+        detected_maze->maze[mouse_x][mouse_y]->top_wall = has_wall;
 
 	}
+
+    return has_wall;
 
 }
 
@@ -490,39 +527,80 @@ bool Mouse:: can_move(){
     return (get_front_sensor_value()==0);
 }
 
-void Mouse:: adjust_direction(){
-
-
-}
-
 
 //Assumption: the maze[0][y] and maze[x][0] has left wall and bottom wall
-void Mouse:: check_wall(){
+void Mouse:: check_open_neighbor(){
+
+    right_sensor = get_right_sensor_value();
+    front_sensor = get_front_sensor_value();
+    left_sensor = get_left_sensor_value();
 
     if(direction == NORTH){
-        detected_maze[mouse_x][mouse_y]->right_wall = get_right_sensor_value();
-        detected_maze[mouse_x][mouse_y]->top_wall = get_front_sensor_value();
+
+        if(prev == SOUTH){
+            south_open = 1;
+        }
+
+        north_open = !front_sensor;
+        east_open = !right_sensor;
+        west_open = !left_sensor;
+
 
     } else if(direction == SOUTH){
-        detected_maze[mouse_x][mouse_y]->right_wall = get_left_sensor_value();
+
+        if(prev == NORTH){
+            north_open = 1;
+        }
+
+        south_open = !front_sensor;
+        east_open = !left_sensor;
+        west_open = !right_sensor;
+
     } else if(direction == EAST){
-        detected_maze[mouse_x][mouse_y]->right_wall = get_front_sensor_value();
-        detected_maze[mouse_x][mouse_y]->top_wall = get_left_sensor_value();
+
+        if(prev == WEST){
+            west_open = 1;
+        }
+
+        south_open = !left_sensor;
+        east_open = !front_sensor;
+        north_open = !right_sensor;
+       
 
     } else{ //WEST
-        detected_maze[mouse_x][mouse_y]->top_wall = get_right_sensor_value();
 
+        if(prev == EAST){
+            east_open = 1;
+        }
+
+        south_open = !right_sensor;
+        west_open = !left_sensor;
+        north_open = !left_sensor;
     }
 }
 
-void Mouse:: check_neighbor(){
+
+/* Check the minimum from a set of neighboring cells */
+int Mouse:: min_open_neighbor(vector<Cell*> cells) {
+    int min = MAX;
+    for (vector<Cell *>::iterator it = cells.begin(); it != cells.end(); it++) {
+        if ((*it)->dist < min) {
+            min = (*it)->dist;
+        }
+    }
+    return min;
+}
+
+
+void Mouse:: update_distance(){
     Cell * curr;
     vector<Cell*> neighbor;
+    vector<Cell*> open_neighbor;
     int min_dist;
 
-    vc.push_back(detected_maze[mouse_x][mouse_y]);
+    stk.push_back(detected_maze->maze[mouse_x][mouse_y]);
 
-    while(!vc.empty()){
+    while(!stk.empty()){
 
         curr = stk.back();
         stk.pop_back();
@@ -530,49 +608,165 @@ void Mouse:: check_neighbor(){
         min_dist = MAX;
 
         if(mouse_x < MAZE_SIZE-1){ //top cell
-            if(detected_maze[mouse_x + 1][mouse_y]->dist != 0)
-                neighbor.push_back(detected_maze[mouse_x + 1][mouse_y]);
+            neighbor.push_back(detected_maze->maze[mouse_x + 1][mouse_y]);
+            if(north_open)
+                open_neighbor.push_back(detected_maze->maze[mouse_x + 1][mouse_y]);
+
         }
 
         if(mouse_y < MAZE_SIZE -1){ //right_cell
-            if(detected_maze[mouse_x][mouse_y+1]->dist!= 0)
-                neighbor.push_back(detected_maze[mouse_x][mouse_y+1]);
+            neighbor.push_back(detected_maze->maze[mouse_x][mouse_y+1]);
+            if(east_open)
+                open_neighbor.push_back(detected_maze->maze[mouse_x][mouse_y+1]);
         }
 
         if(mouse_x > 0){ //left cell
-            if(detected_maze[mouse_x-1][mouse_y]->dist != 0)
-                neighbor.push_back(detected_maze[mouse_x-1][mouse_y]);
+            neighbor.push_back(detected_maze->maze[mouse_x][mouse_y-1]);
+            if(west_open)
+                open_neighbor.push_back(detected_maze->maze[mouse_x][mouse_y-1]);
         }
 
         if(mouse_y > 0){ //bottom cell
-            if (detected_maze[mouse_x][y-1]->dist != 0)
-                neighbor.push_back(detected_maze[mouse_x][mouse_y-1]);
+            neighbor.push_back(detected_maze->maze[mouse_x-1][mouse_y]);
+            if(south_open)
+                open_neighbor.push_back(detected_maze->maze[mouse_x-1][mouse_y]);
                 
         }
 
-        for (vector<Cell *>::iterator it = neighbor.begin(); it != neighbor.end(); it++) {
-            if ((*it)->dist < min) {
-                min = (*it)->dist;
-            }
+        if (open_neighbor.empty()) {
+            printf("This should never happen, error\n");
+            neighbor.clear();
+            continue;
         }
 
-        if(curr-dist){
 
+        min_dist = min_open_neighbor(open_neighbor);
+        open_neighbor.clear();
+
+        if (curr->dist - 1 != min_dist) {
+            curr->dist = min_dist + 1;
+            for (vector<Cell *>::iterator it = neighbor.begin(); it != neighbor.end(); it++) {
+                if (!detected_maze->is_center(*it)) {
+                    stk.push_back(*it);
+                }
+            }
+            neighbor.clear();
         }
     }
 
 }
 
+void Mouse:: print_open_direction(){
+
+    printf("north open: %d ", north_open);
+    printf("south open: %d ", south_open);
+    printf("east open: %d ", east_open);
+    printf("west open: %d\n", west_open);
+}
+
+void Mouse:: print_sensor_reading(){
+    printf("right sensor: %d ", get_right_sensor_value());
+    printf("left sensor: %d ",get_left_sensor_value());
+    printf("front sensor: %d\n", get_front_sensor_value());
+}
+
 void Mouse:: move_one_cell(){
-	//Check and Add Wall
-    check_wall();
+	//check the open neighbor and update the wall at the same time
+    printf("MOVE ONE CELL\n");
 
-    //Check_neighbor
-    check_neighbor();
+    check_open_neighbor();
 
-    //Adjust_direction
+    // printf("finish checking open neighbor\n");
+    //update the distance properly
+    update_distance();
+
+    // printf("update_distance\n");
+
+    //pick the next cell and adjust_direction
+
+    printf("The current mouse_x is %d\n", mouse_x);
+    printf("The current mouse_y is %d\n", mouse_y);
+    print_sensor_reading();
+    print_open_direction();
+
+
+
+    
+    int min_dist = MAX;
+    int temp;
+    if(north_open){
+        temp = detected_maze->maze[mouse_x+1][mouse_y]->dist;
+        if (temp < min_dist) {
+            min_dist = temp;
+            direction = NORTH;
+            prev = SOUTH;
+        }
+       
+    }
+    
+    // printf("after checking north\n");
+    if(south_open){
+        temp = detected_maze->maze[mouse_x-1][mouse_y]->dist;
+        if (temp < min_dist){
+            min_dist = temp;
+            direction = SOUTH;
+            prev = NORTH;
+
+        }
+    }
+    // printf("after checking south\n");
+    
+    if(east_open){
+        temp = detected_maze->maze[mouse_x][mouse_y+1]->dist;
+        if (temp < min_dist){
+            min_dist = temp;
+            direction = EAST;
+            prev = WEST;
+
+        }
+    }
+    // printf("after checking east\n");
+
+   
+    // printf("Current direction %d\n", direction);
+   
+    if(west_open){
+        printf("1\n");
+        temp = detected_maze->maze[mouse_x][mouse_y-1]->dist;
+        printf("2\n");
+        if (temp < min_dist) {
+            printf("3\n");
+            min_dist = temp;
+            direction = WEST;
+            prev = EAST;
+        }
+        printf("4\n");
+      
+    }
+
+    // printf("Finishing pick the next cell\n");
+
 
     //Move
+    if(direction == NORTH){
+        mouse_x += 1;
+    }
+    else if(direction == SOUTH){
+        mouse_x -= 1;
+    }
+    else if (direction == EAST){
+        mouse_y += 1;
+    }
+    else{ //WEST
+        mouse_y -= 1;
+    }
+
+    north_open = 0;
+    south_open = 0;
+    east_open = 0;
+    west_open = 0;
+
+    printf("Finishing Reset, METHOD ENDS\n");
 
 }
 
@@ -588,7 +782,12 @@ void Mouse:: solve_maze(){
 
 Mouse:: Mouse(){
     direction = NORTH;
-    prev_dir = -1;
+    prev = -1;
+
+    north_open = 0;
+    south_open = 0;
+    east_open = 0;
+    west_open = 0;
 
     mouse_x = 0;
     mouse_y = 0; 
@@ -635,6 +834,18 @@ int main(){
     
     printf("Let's see how the Mouse is going to solve it:\n");
     my_mouse->print_maze();
+
+    my_mouse->move_one_cell();
+    my_mouse->print_maze();
+    my_mouse->move_one_cell();
+    my_mouse->print_maze();
+    my_mouse->move_one_cell();
+    my_mouse->print_maze();
+    my_mouse->move_one_cell();
+    my_mouse->print_maze();
+    my_mouse->move_one_cell();
+    my_mouse->print_maze();
+
 
     //my_mouse->test_sensor();
     

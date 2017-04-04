@@ -89,7 +89,12 @@ class Mouse{
         bool south_open;
         bool east_open;
         bool west_open;
-        int prev_dir; // the previous direction, the previous direction is open by default
+
+        bool front_sensor;
+        bool left_sensor;
+        bool right_sensor;
+
+        int prev; // the previous direction, the previous direction is open by default
 
 		Maze * reference_maze;
 		Maze * detected_maze;
@@ -103,23 +108,33 @@ class Mouse{
 		
 		int get_direction();
 
-		void has_left_wall(); //Left wall is detected bases on the Left sensor;
+		// void has_left_wall(); //Left wall is detected bases on the Left sensor;
 
-		void has_right_wall(); //Right wall is detected based on the right sensor;
+		// void has_right_wall(); //Right wall is detected based on the right sensor;
 
-		void has_top_wall(); //Front wall is detected based on the front sensor;
+		// void has_top_wall(); //Front wall is detected based on the front sensor;
+
+        void print_sensor_reading();
+
+        void print_open_direction();
 
 		void print_maze();
         
-        bool get_front_sensor_value(); //read the value from the front sensor
+        bool get_front_sensor_value(); //read the value from the front sensor and will update the wall properly
 
-        bool get_left_sensor_value(); //read the value from the left sensor
+        bool get_left_sensor_value(); //read the value from the left sensor and will update the wall properly
 
-        bool get_right_sensor_value(); //read the value from the right sensor
+        bool get_right_sensor_value(); //read the value from the right sensor and will update the wall properly
         
         void test_sensor();
 
         bool can_move();
+
+        void update_distance();
+
+        int min_open_neighbor(vector<Cell*> cells);
+
+        void check_open_neighbor();
 
 		void solve_maze();
 
