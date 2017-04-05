@@ -28,9 +28,9 @@ public:
     bool visited;
     bool hasMouse;
 
-    Cell(int x, int y) : y(y), x(x), dist(0), top_wall(false), right_wall(false), hasMouse(false){}
-    Cell(int x, int y, int dist) : y(y), x(x), dist(dist), top_wall(false), right_wall(false), hasMouse(false){}
-    Cell(int x, int y, bool top_wall, bool right_wall) : y(y), x(x), top_wall(top_wall), right_wall(right_wall), hasMouse(false){}
+    Cell(int y, int x) : y(y), x(x), dist(0), top_wall(false), right_wall(false), hasMouse(false){}
+    Cell(int y, int x, int dist) : y(y), x(x), dist(dist), top_wall(false), right_wall(false), hasMouse(false){}
+    Cell(int y, int x, bool top_wall, bool right_wall) : y(y), x(x), top_wall(top_wall), right_wall(right_wall), hasMouse(false){}
 };
 
 class Maze{
@@ -107,6 +107,12 @@ class Mouse{
 		void set_direction(int dir);
 		
 		int get_direction();
+
+		// void has_left_wall(); //Left wall is detected bases on the Left sensor;
+
+		// void has_right_wall(); //Right wall is detected based on the right sensor;
+
+		// void has_top_wall(); //Front wall is detected based on the front sensor;
 
         void print_sensor_reading();
 
