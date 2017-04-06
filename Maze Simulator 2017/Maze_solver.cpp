@@ -753,6 +753,17 @@ void Mouse:: move_one_cell(){
         }
        
     }
+
+
+    if(east_open){
+        temp = detected_maze->maze[mouse_x][mouse_y+1]->dist;
+        if (temp < min_dist){
+            min_dist = temp;
+            direction = EAST;
+            prev = WEST;
+
+        }
+    }
     
     // printf("after checking north\n");
     if(south_open){
@@ -766,15 +777,6 @@ void Mouse:: move_one_cell(){
     }
     // printf("after checking south\n");
     
-    if(east_open){
-        temp = detected_maze->maze[mouse_x][mouse_y+1]->dist;
-        if (temp < min_dist){
-            min_dist = temp;
-            direction = EAST;
-            prev = WEST;
-
-        }
-    }
     // printf("after checking east\n");
      
     if(west_open){
