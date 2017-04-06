@@ -1,6 +1,8 @@
 #include "mbed.h"
 #include "ir_sensor.h"
 
+const int FRONT_THRESHOLD = 12;
+
 /*
  * front_wall_dist
  * Parameters: None
@@ -34,5 +36,5 @@ float right_wall_dist()
 }
 
 bool has_front_wall() {
-    return rightFrontIR < 12;
+    return rightFrontIR < FRONT_THRESHOLD && leftFrontIR < FRONT_THRESHOLD;
 }

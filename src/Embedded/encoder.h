@@ -1,11 +1,9 @@
 #ifndef ENCODER_H
 #define ENCODER_H
-
 #include "mbed.h"
 
-
 /*
-Reset both encoders
+* Reset both encoders
 */
 void resetEncoders();
 
@@ -17,11 +15,10 @@ int getEncoderDistance();
 
 class Encoder {
 public:
-
     volatile int pulses;
 
     Encoder(PinName channelA, PinName channelB);
-
+    
     //Reset the encoder
     void reset(void);
 

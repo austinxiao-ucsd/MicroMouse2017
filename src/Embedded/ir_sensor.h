@@ -1,6 +1,5 @@
 #ifndef IR_H
 #define IR_H
-
 #include "mbed.h"
 
 extern Serial pc;
@@ -70,7 +69,7 @@ public:
         COEFF_1(c1), COEFF_2(c2), COEFF_3(c3), COEFF_4(c4), 
         COEFF_5(c5), COEFF_6(c6), COEFF_7(c7) {
     }
-    
+
     // TODO: Apply Sampling techniques to get an accurate read
     float readIR(){
         float sum = 0;
