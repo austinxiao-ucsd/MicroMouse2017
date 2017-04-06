@@ -532,6 +532,8 @@ void Mouse:: check_open_neighbor(){
     right_sensor = get_right_sensor_value();
     front_sensor = get_front_sensor_value();
     left_sensor = get_left_sensor_value();
+    print_sensor_reading();
+
 
     if(direction == NORTH){
 
@@ -560,9 +562,9 @@ void Mouse:: check_open_neighbor(){
             west_open = 1;
         }
 
-        south_open = !left_sensor;
+        south_open = !right_sensor;
         east_open = !front_sensor;
-        north_open = !right_sensor;
+        north_open = !left_sensor;
        
 
     } else{ //WEST
@@ -571,9 +573,9 @@ void Mouse:: check_open_neighbor(){
             east_open = 1;
         }
 
-        south_open = !right_sensor;
-        west_open = !left_sensor;
-        north_open = !left_sensor;
+        south_open = !left_sensor;
+        west_open = !front_sensor;
+        north_open = !right_sensor;
     }
 
     printf("finish checking neighbor and adding walls\n");
@@ -715,6 +717,7 @@ void Mouse:: print_open_direction(){
 }
 
 void Mouse:: print_sensor_reading(){
+    printf("current direction: %d\n", direction);
     printf("right sensor: %d ", get_right_sensor_value());
     printf("left sensor: %d ",get_left_sensor_value());
     printf("front sensor: %d\n", get_front_sensor_value());
@@ -724,7 +727,7 @@ void Mouse:: move_one_cell(){
 	//check the open neighbor and update the wall at the same time
     printf("CURRENT MOUSE POSITION <%d, %d>\n", mouse_x, mouse_y);
     printf("prev direction is %d\n", prev);
-    printf("current direction is %d", direction);
+    printf("current direction is %d\n", direction);
 
     check_open_neighbor();
 
@@ -817,6 +820,7 @@ void Mouse:: solve_maze(){
 	//while the mouse has not find the center of the Maze
 	while(!detected_maze->is_center(mouse_x, mouse_y)){
 		move_one_cell();
+        print_maze();
 	}
 	
 
@@ -869,7 +873,7 @@ int main(){
     //         break;
     //     }
     // }
-    my_mouse->load_maze("size6.txt");
+    my_mouse->load_maze("apec2016.txt");
 
 	printf("Here is the inital Maze:\n"); 
     my_mouse->print_reference_maze();
@@ -886,7 +890,7 @@ int main(){
     }   
 
     my_mouse->solve_maze();
-    my_mouse->print_maze();
+    
     // my_mouse->print_maze();     //<position <0,0>
     // my_mouse->move_one_cell();
 

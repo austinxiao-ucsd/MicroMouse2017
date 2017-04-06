@@ -5,7 +5,7 @@
 #include <cstdio>
 #include "math.h"
 using namespace std;
-const int MAZE_SIZE = 6;
+const int MAZE_SIZE = 16;
 const int NORTH = 0;
 const int SOUTH = 1;
 const int WEST = 2; 
