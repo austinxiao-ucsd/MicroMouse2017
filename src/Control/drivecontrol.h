@@ -12,6 +12,7 @@ class DriveControl {
 public:
     int y;
     int x;
+    //float total_error;
     DriveControl (int start_x, int start_y);
     ~DriveControl();
     

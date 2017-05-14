@@ -1,6 +1,20 @@
 #include "drivecontrol.h"
-#include "pin_assignment.h"
+//#include "pin_assignment.h"
 #include "io_modules.h"
+#include "mbed.h"
+
+// Battery Debugger Interface
+AnalogIn battery(PA_3);
+
+
+// Led Debugger Interface
+DigitalOut led_1(PB_12);
+DigitalOut led_2(PB_13);
+DigitalOut led_3(PB_14);
+DigitalOut led_4(PB_15);
+
+// System io
+Serial serial (PA_9, PA_10);
 
 // Define states for debugging the mouse hardware
 // const int DRIVE = 1, TURN = 2, DEBUG = 3, STOP = 4;
@@ -14,9 +28,9 @@ bool hasFoundCenter = false;
 
 // Battery Consumption Indicator
 void setup() {
-    pc.baud(9600);
+    // pc.baud(9600);
     // using the serial functions will have an impact on timing.
-    // serial.printf("voltage value is: %3.3f%%\r\n", battery.read()*100.0f);
+//    serial.printf("voltage value is: %3.3f%%\r\n", battery.read()*100.0f);
     // serial.printf("normalized: 0x%04X \r\n", battery.read_u16());
     if (battery.read() < 0.67f){
         // flash led
@@ -34,8 +48,11 @@ int main() {
         setup();
         led_1 = 1;
         driver->drive_one_forward();
-        wait(0.5);
-        driver->stop();
-        wait(10);
+        //pc.printf("total error %f\n\r", driver->total_error);
+        wait_ms(1);
+        //wait(2);
+//        
+//        driver->stop();
+//        wait(3);
     }
 }

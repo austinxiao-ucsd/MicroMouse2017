@@ -1,32 +1,33 @@
 #include "left_motor.h"
-PwmOut motor_left_sig(PB_7);
-DigitalOut dir_left(PB_6);
-
+PwmOut leftmotor_channelA(PB_6);
+PwmOut leftmotor_channelB(PB_7);
 
 LeftMotor::LeftMotor() {
-    curr_speed = 0;
-    dir_left = 0;
-    motor_left_sig.period(0.001);
+ 
+    leftmotor_channelA.period_us(50);
+    leftmotor_channelB.period_us(50);
 }
 
 //Sets motor speed
 void LeftMotor::speed(float speed) {
-    curr_speed = speed;
-    motor_left_sig.write(speed);
+
+    if(speed < 0.0f){
+        leftmotor_channelA.write(-speed/100);
+        leftmotor_channelB.write(0);
+    }
+    else{
+        leftmotor_channelB.write(speed/100);
+        leftmotor_channelA.write(0); 
+    }
 }
 
-void LeftMotor::inv_dir(bool dir){
-    if(dir == 1)
-        dir_left = 1;
-    else
-        dir_left = 0;
-}
-
-void LeftMotor::set_period(float period) {
-    motor_left_sig.period(period);
-}
+//void LeftMotor::set_period(float period) {
+//    motor_right_sig.period(period);
+//}
 
 //Sets motor speed to 0
 void LeftMotor::stop() {
-    motor_left_sig.write(0);
+    
+    leftmotor_channelB.write(0);
+    leftmotor_channelA.write(0);
 }
