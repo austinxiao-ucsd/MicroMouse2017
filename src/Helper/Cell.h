@@ -9,8 +9,8 @@
 class Cell {
 
 public:
-    int y;
     int x;
-    Cell(int y, int x) : y(y), x(x) {}
+    int y;
+    Cell(int x, int y) : x(x), y(y) {}
 };
 #endif

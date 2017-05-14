@@ -1,48 +1,41 @@
-#include "mbed.h"
 #include "drivecontrol.h"
 #include "pin_assignment.h"
-
-AnalogIn battery(PA_3);
-Serial pc(PA_9, PA_10);
+#include "io_modules.h"
 
 // Define states for debugging the mouse hardware
-static const int DRIVE = 1, TURN = 2, DEBUG = 3, STOP = 4;
+// const int DRIVE = 1, TURN = 2, DEBUG = 3, STOP = 4;
 // Direction of which to turn
-static const int LEFT = 0, RIGHT = 1;
+// const int LEFT = 0, RIGHT = 1;
 // Start and End Pos
-static const int START_POS = 0, END_POS = 0;
+const int START_POS = 0, END_POS = 0;
+
 // Terminating condition for the main control loop
 bool hasFoundCenter = false;
 
 // Battery Consumption Indicator
 void setup() {
     pc.baud(9600);
-    if (battery.read() < 0.73f){
+    // using the serial functions will have an impact on timing.
+    // serial.printf("voltage value is: %3.3f%%\r\n", battery.read()*100.0f);
+    // serial.printf("normalized: 0x%04X \r\n", battery.read_u16());
+    if (battery.read() < 0.67f){
+        // flash led
+        led_1 = 1;
+        led_2 = 1;
+        led_3 = 1;
+        led_4 = 1;
     }  
 }
 
 // Performs the basic drive control of the mouse
 int main() {
-    DriveControl * driver = new DriveControl(START_POS, END_POS);
-    int state = DRIVE;
-    while(!hasFoundCenter) {
-        switch (state) {
-            case DRIVE:
-                driver->drive_one_forward();
-            case TURN:
-                if (driver->get_next_direction() == LEFT) {
-                    driver->turn_left();
-                }
-                else if (driver->get_next_direction() == RIGHT) {
-                    driver->turn_right();    
-                }
-            case STOP:
-                driver->stop();
-            case DEBUG:
-                // TODO
-            default:
-                // Error Condition. Flash all lights.
-                break;  
-        }
+    DriveControl * driver = new DriveControl (START_POS, END_POS);
+    while(1) {
+        setup();
+        led_1 = 1;
+        driver->drive_one_forward();
+        wait(0.5);
+        driver->stop();
+        wait(10);
     }
 }

@@ -1,6 +1,5 @@
 #ifndef __DRIVE_CONTROL_H__
 #define __DRIVE_CONTROL_H__
-#include "motor.h"
 
 /**
 * Control mouse movements.
@@ -16,17 +15,12 @@ public:
     DriveControl (int start_x, int start_y);
     ~DriveControl();
     
-    int get_next_direction() {
-        // TODO
-        // Check relative pos of next_cell and curr_cell
-        return 0;
-    }
+    int get_next_direction();
+    
+    int get_next_state(int state);
     
     // Stops both motors. Assume no coasting.
-    void stop() {
-        leftMotor = 0;
-        rightMotor = 0;
-    }
+    void stop();
     
     void drive_one_forward();
     
@@ -35,5 +29,13 @@ public:
     void turn_left();
     
     void turn_right();
+    
+    void drive(float speed);
+    
+    bool has_front_wall();
+    
+    bool has_right_wall();
+    
+    bool has_left_wall();
 };
 #endif

@@ -1,13 +1,8 @@
 #ifndef PIN_ASSIGNMENTS_H
 #define PIN_ASSIGNMENTS_H
 
-#include "motor.h"
 #include "encoder.h"
 #include "ir_sensor.h"
-
-// Motor
-Motor leftMotor(PB_7, PB_6);
-Motor rightMotor(PB_9, PB_8);
 
 // Encoders
 Encoder leftEncoder(PC_9, PC_8);

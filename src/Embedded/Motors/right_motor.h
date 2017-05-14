@@ -1,20 +1,22 @@
-#ifndef MOTOR_H
-#define MOTOR_H
+#ifndef RIGHT_MOTOR_H
+#define RIGHT_MOTOR_H
 #include "mbed.h"
-
-class Motor {
+class RightMotor {
 public:
-    Motor(PinName pwm, PinName dir);
+    RightMotor();
     
     // Define speed as float value between -1.0 and 1.0
     void speed(float speed);
     
+    void inv_dir(bool dir);
     // Stop the motor without breaking mechanism
     void stop(void);
     
+    void set_period(float period);
+    
     // Override operator for setting motor speed
     void operator = (float speed) {
-        Motor::speed(speed);
+        RightMotor::speed(speed);
     }
     
     // Getter method to retrieve the current speed
@@ -23,13 +25,7 @@ public:
     }
     
 private:
-    volatile float curr_speed;
-    PwmOut pwm_pin;
-    DigitalOut dir;
+    float curr_speed;
 };
-
-// Declaring as extern to enable global scope
-extern Motor leftMotor;
-extern Motor rightMotor;
 
 #endif

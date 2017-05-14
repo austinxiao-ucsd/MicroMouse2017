@@ -1,22 +1,6 @@
 #include "encoder.h"
-/*
-Reset both encoders
-*/
-void resetEncoders(){
-    leftEncoder.reset();
-    rightEncoder.reset();
-}
 
-/*
-Returns the average number of pulses across both encoders since last reset. Unit is encoder pulses; intended for straight driving only.
-*/
-int getEncoderDistance(){
-    return (leftEncoder + rightEncoder) >> 1;
-}
-
-/*
- * Represents a quadrature motor encoder. Modified from mbed QEI 
- */
+// Represents a quadrature motor encoder. Modified from mbed QEI 
 Encoder::Encoder(PinName channelA, PinName channelB) : 
     channelA_(channelA), 
     channelB_(channelB){
@@ -59,4 +43,15 @@ void Encoder::encode(void) {
 //Resets the encoder
 void Encoder::reset(void) {
     pulses = 0;
+}
+
+// Reset both encoders
+void resetEncoders(){
+    leftEncoder.reset();
+    rightEncoder.reset();
+}
+
+// Returns the average number of pulses across both encoders since last reset. Unit is encoder pulses; intended for straight driving only.
+int getEncoderDistance(){
+    return (leftEncoder + rightEncoder) >> 1;
 }
