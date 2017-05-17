@@ -6,7 +6,6 @@
 // Battery Debugger Interface
 AnalogIn battery(PA_3);
 
-
 // Led Debugger Interface
 DigitalOut led_1(PB_12);
 DigitalOut led_2(PB_13);
@@ -47,12 +46,28 @@ int main() {
     while(1) {
         setup();
         led_1 = 1;
-        driver->drive_one_forward();
-        //pc.printf("total error %f\n\r", driver->total_error);
-        wait_ms(1);
-        //wait(2);
-//        
+        driver->getEncoder();
+        //wait(1);
+        if (!driver->has_front_wall()) {
+            driver->drive_forward();
+        }
+        else{
+            driver->stop();
+        }
+        //wait_ms(1);
+        /*
+        else if (!driver->has_right_wall) {
+            // driver->turn_right();
+            // turn_right() in drivecontrol will call pid_controller::turn(RIGHT)   
+        }
+        else if (!driver->has_left_wall) {
+            // driver->turn_left()
+        }
+        else { // has all three walls
+            // driver->turn_around();
+        }*/
+        
+     
 //        driver->stop();
-//        wait(3);
     }
 }

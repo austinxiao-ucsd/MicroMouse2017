@@ -46,12 +46,13 @@ void Encoder::reset(void) {
 }
 
 // Reset both encoders
-void resetEncoders(){
+void Encoder:: resetEncoders(){
     leftEncoder.reset();
     rightEncoder.reset();
 }
 
 // Returns the average number of pulses across both encoders since last reset. Unit is encoder pulses; intended for straight driving only.
-int getEncoderDistance(){
-    return (leftEncoder + rightEncoder) >> 1;
+int Encoder:: getEncoderDistance(bool left){
+    
+    return (left == 1) ? leftEncoder : rightEncoder;
 }

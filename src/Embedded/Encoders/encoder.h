@@ -14,6 +14,13 @@ public:
         return pulses;
     }
     
+    
+    // Reset both encoders
+    void resetEncoders();
+
+    // Returns the average number of pulses across both encoders since last reset. Unit is encoder pulses; intended for straight driving only.
+    int getEncoderDistance(bool left);
+    
 private:
     InterruptIn channelA_;
     InterruptIn channelB_;
@@ -23,11 +30,6 @@ private:
     void encode(void);
 };
 
-// Reset both encoders
-void resetEncoders();
-
-// Returns the average number of pulses across both encoders since last reset. Unit is encoder pulses; intended for straight driving only.
-int getEncoderDistance();
 
 
 extern Encoder leftEncoder;

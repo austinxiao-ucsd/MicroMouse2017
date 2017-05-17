@@ -23,13 +23,17 @@ public:
     // Stops both motors. Assume no coasting.
     void stop();
     
-    void drive_one_forward();
+    void getEncoder();
+    
+    void drive_forward();
     
     void turn();
     
     void turn_left();
     
     void turn_right();
+    
+    void turn_around();
     
     void drive(float speed);
     

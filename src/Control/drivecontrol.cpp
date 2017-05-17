@@ -1,6 +1,5 @@
 #include "drivecontrol.h"
 #include "Cell.h"
-//#include "mbed.h"
 #include "ir_sensor.h"
 #include "left_motor.h"
 #include "right_motor.h"
@@ -8,26 +7,101 @@
 
 IRSensor leftIR(PA_8, PC_5);
 IRSensor rightIR(PB_0, PA_4);
-// Bit to specify debugging mode
-const bool DEBUG = false;
-// Define states for debugging the mouse hardware
-const int DRIVE = 0, TURN = 2, STOP = 4;
-const int SENSOR_THRESHOLD = 12;
+//Encoder rightEncoder(PA_1, PA_0);
+//Encoder leftEncoder(PC_9, PC_8);
 LeftMotor * leftMotor;
 RightMotor * rightMotor;
 Cell * curr_cell;
 Serial pc(PA_9, PA_10);
 
-float motor_speed;
-//float LEFT_WALL_THRES = 0.86f, RIGHT_WALL_THRES = 0.86f;
-float LEFT_WALL_THRES = 0.46f, RIGHT_WALL_THRES = 0.21f;
-float SENSOR_ERROR_OFFSET = 0.0f;
+// Define states for debugging the mouse hardware
+const int DRIVE = 0; //, TURN = 2, STOP = 4;
+const int TURN_LEFT = 0, TURN_RIGHT = 1, TURN_AROUND = 2;
 
-float left_speed;
-float right_speed;
-float error_p = 0.0f, old_error_p = 0.0f, old_error_d = 0.0f, error_d = 0.0f;
-float total_error = 0.0f;
-float P = 18.0f, D = 3.0f;
+// Sensor offsets
+float FRONT_SENSOR_THRESHOLD = 0.90f, SENSOR_ERROR_OFFSET = 0.0f;
+float LEFT_WALL_THRES = 0.46f, RIGHT_WALL_THRES = 0.21f;
+const int SENSOR_THRESHOLD = 12;
+
+// Motor speed offsets
+float left_speed, right_speed, motor_speed;
+float MOTOR_BASE_SPEED = 15.0f;
+
+namespace pid_controller { 
+    // PID Constants
+    float error_p = 0.0f, old_error_p = 0.0f, old_error_d = 0.0f, error_d = 0.0f;
+    float total_error = 0.0f;
+    float P = 18.0f, D = 3.0f;
+    
+    void navigate() {
+        bool has_left_wall = leftDiagonalIR.readIR() > LEFT_WALL_THRES;
+        bool has_right_wall = rightDiagonalIR.readIR() > RIGHT_WALL_THRES;
+
+        if (has_left_wall && has_right_wall) {
+            if (rightDiagonalIR - RIGHT_WALL_THRES < 0) {
+                error_p = rightDiagonalIR - RIGHT_WALL_THRES;
+            }
+            else if (leftDiagonalIR - LEFT_WALL_THRES < 0) {
+                error_p = leftDiagonalIR - LEFT_WALL_THRES;
+            }
+            else{
+                error_p = rightDiagonalIR - leftDiagonalIR;
+            }
+            error_d = error_p - old_error_p;    
+        }
+        else if (has_left_wall) {
+            error_p = 2 * (LEFT_WALL_THRES - leftDiagonalIR.readIR());
+            error_d = error_p - old_error_p;
+        }
+        else if (has_right_wall) {
+            error_p = 2 * (rightDiagonalIR.readIR() - RIGHT_WALL_THRES);
+            error_d = error_p - old_error_p;
+        }
+        else if (!has_left_wall && !has_right_wall) {
+            error_p = 0;
+            error_d = 0;
+        }
+        total_error = P * error_p + D * (error_d - old_error_d);
+        old_error_p = error_p;
+        old_error_d = error_d;
+        
+        
+        if(total_error < 7.5f){
+            leftMotor -> speed(MOTOR_BASE_SPEED - total_error);
+            rightMotor -> speed(MOTOR_BASE_SPEED + total_error);
+        }
+        else{
+            leftMotor->speed(MOTOR_BASE_SPEED);
+            rightMotor->speed(MOTOR_BASE_SPEED);
+        }
+    }
+    
+    void one_cell_turned(){
+        leftEncoder.reset();
+        rightEncoder.reset();
+        while(leftEncoder.getEncoderDistance(1)<-46000 & leftEncoder.getEncoderDistance(1)<46000){
+            //Do nothing
+        }
+    }
+    
+    // should use this method as the exit condition
+    // in the pid_controller::navigate() method
+    // resets the pid, encoders, etc.
+    void one_cell_traversed() {
+        leftEncoder.reset();
+        rightEncoder.reset();
+        old_error_p = old_error_d = total_error = 0.0f;
+    }
+    
+    // TODO
+    void turn (int dir) {
+        // https://github.com/austinxiao-ucsd/Falcon-MicroMouse/blob/master/Micromouse_test/drive_control.h
+        if (TURN_LEFT) { // Flip motor speed to do in place turning 
+        }
+        else { // TODO: ...
+        }
+    }
+}
 
 // Currently only have the x, y position fields for
 // each cell.
@@ -39,13 +113,12 @@ DriveControl::DriveControl (int start_x, int start_y) {
 
 // Defines the next cell to traverse.
 Cell * next_cell() {
-    // cell should get the reference from the Algorithm class.
-    // Cell * cell;
     return curr_cell;
 }
 
 void DriveControl::turn_left() {
     // TODO: Add PID Control
+    pid_controller::turn(TURN_LEFT);
 }
 
 int DriveControl::get_next_direction() {
@@ -56,23 +129,21 @@ int DriveControl::get_next_direction() {
 int DriveControl::get_next_state(int state) {
     // Simply drives the mouse for testing
     return DRIVE;
-    
-    /*
-    // Front wall threshold is set to 12
-    if (this->DriveControl::has_front_wall()) {
-        return DRIVE;
-    }
-    
-    if (!has_right_wall() || !has_left_wall()) {
-     //   return TURN;
-    }
-    // Add Another Check for abnormal state
-    return DEBUG;   */ 
+}
+
+void DriveControl::getEncoder(){
+    pc.printf("LeftEncoder Reading %d", leftEncoder.getEncoderDistance(1));
+    pc.printf("RightEncoder Reading %d\n\r", rightEncoder.getEncoderDistance(0));
 }
 
 void DriveControl::turn_right() {
     // TODO: Add PID Control
-    
+    pid_controller::turn(TURN_RIGHT);
+}
+
+void DriveControl::turn_around() {
+    // TODO: Add PID Control
+    pid_controller::turn(TURN_AROUND);
 }
 
 void DriveControl::stop() {
@@ -80,87 +151,14 @@ void DriveControl::stop() {
     rightMotor->stop(); 
 }
 
-/*
-IRSensor rightDiagonalIR(PA_8, PA_5);
-IRSensor rightFrontIR(PB_0, PA_6);
-IRSensor leftFrontIR(PB_1, PA_7);
-IRSensor leftDiagonalIR(PC_6, PC_4);
-*/
-
-void DriveControl::drive_one_forward() {
-    if (DEBUG) { rightMotor->speed(15); leftMotor->speed(15);}
-    else {
-    //    pid_controller::start_pid();
-    //    total_error = pid_controller::get_error();
-        bool has_left_wall = leftDiagonalIR.readIR() > LEFT_WALL_THRES;
-        bool has_right_wall = rightDiagonalIR.readIR() > RIGHT_WALL_THRES;
-       // pc.printf("Left sensor: %f\n\r", leftDiagonalIR.readIR());//leftIR.readIR());
-       // pc.printf("Right sensor: %f\n\r", rightDiagonalIR.readIR());//rightIR.readIR());
-       // pc.printf("Different: %f\n\r", rightDiagonalIR.readIR() - leftDiagonalIR.readIR());
-        
-        
-        old_error_d = error_d;
-        if (has_left_wall && has_right_wall) {
-//              pc.printf("Has both wall \r\n");
-            float tmp_dist;
-            if (rightDiagonalIR - RIGHT_WALL_THRES < 0) {
-                tmp_dist = rightDiagonalIR - RIGHT_WALL_THRES;
-            }
-            else if (leftDiagonalIR - LEFT_WALL_THRES < 0) {
-                tmp_dist = leftDiagonalIR - LEFT_WALL_THRES;
-            }
-            else{
-                tmp_dist = rightDiagonalIR - leftDiagonalIR;
-            }
-            error_p = tmp_dist;
-            //error_p = rightDiagonalIR - leftDiagonalIR - SENSOR_ERROR_OFFSET;
-            error_d = error_p - old_error_p;    
-        }
-        else if (has_left_wall) {
-//              pc.printf("Has right wall \r\n");
-            error_p = 2 * (LEFT_WALL_THRES - leftDiagonalIR.readIR());
-            error_d = error_p - old_error_p;
-        }
-        else if (has_right_wall) {
-//              pc.printf("Has left wall \r\n");
-            error_p = 2 * (rightDiagonalIR.readIR() - RIGHT_WALL_THRES);
-            error_d = error_p - old_error_p;
-        }
-        else if (!has_left_wall && !has_right_wall) {
-//            pc.printf("Not has wall \r\n");
-            error_p = 0;
-            error_d = 0;
-        }
-        
-//        pc.printf("old error p %f\n\r", old_error_p * 100);
-//        pc.printf("error p %f\n\r", error_p * 100);
-//        pc.printf("error d %f\n\r", error_d * 100);
-//        pc.printf("p %f\n\r", P * 100);
-//        pc.printf("d %f\n\r", D * 100);
-        total_error = P * error_p + D * (error_d - old_error_d);
-        old_error_p = error_p;
-        
-        // if (DEBUG) { leftMotor->speed(0.15f); rightMotor->speed(0.85f); }
-        
-        //adjust to right
-       
-        //pc.printf("total error %f\n\r", total_error);
-        
-        if(total_error < 7.5f){
-            leftMotor -> speed(15 - total_error);
-            rightMotor -> speed(15 + total_error);
-        }
-        else{
-            leftMotor->speed(7.5);
-            rightMotor->speed(22.5);
-        }
-        
-    }   
+void DriveControl::drive_forward() {
+    pid_controller::navigate();
 }
 
 
+// TODO: Test top right ir sensor 
 bool DriveControl::has_front_wall() {
- //   return rightFrontIR < SENSOR_THRESHOLD && leftFrontIR < SENSOR_THRESHOLD;
+    return rightFrontIR > FRONT_SENSOR_THRESHOLD;
 }
 
 bool DriveControl::has_left_wall() {
