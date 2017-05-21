@@ -80,6 +80,9 @@ class Mouse{
 	public:
 		int direction; //initial direction is north
 
+        int next_cell_dir = 5;
+        int prev_mouse_dir;
+
 		//the current position of Mouse, should be identical to the Cell'x and y
 		int mouse_x;
 		int mouse_y;

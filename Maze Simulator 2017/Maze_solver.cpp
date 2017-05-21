@@ -748,8 +748,11 @@ void Mouse:: move_one_cell(){
         temp = detected_maze->maze[mouse_x+1][mouse_y]->dist;
         if (temp < min_dist) {
             min_dist = temp;
+            //prev_mouse_dir = direction;
             direction = NORTH;
             prev = SOUTH;
+//            next_cell_dir = NORTH;
+            
         }
        
     }
@@ -759,7 +762,9 @@ void Mouse:: move_one_cell(){
         temp = detected_maze->maze[mouse_x][mouse_y+1]->dist;
         if (temp < min_dist){
             min_dist = temp;
+            //prev_mouse_dir = direction;
             direction = EAST;
+//            next_cell_dir = EAST;
             prev = WEST;
 
         }
@@ -770,7 +775,9 @@ void Mouse:: move_one_cell(){
         temp = detected_maze->maze[mouse_x-1][mouse_y]->dist;
         if (temp < min_dist){
             min_dist = temp;
+            //prev_mouse_dir = direction;
             direction = SOUTH;
+//            next_cell_dir = SOUTH;
             prev = NORTH;
 
         }
@@ -783,6 +790,8 @@ void Mouse:: move_one_cell(){
         temp = detected_maze->maze[mouse_x][mouse_y-1]->dist;
         if (temp < min_dist) {
             min_dist = temp;
+//            next_cell_dir = WEST;
+            //prev_mouse_dir = direction;
             direction = WEST;
             prev = EAST;
         }
@@ -818,11 +827,83 @@ void Mouse:: move_one_cell(){
 }
 
 void Mouse:: solve_maze(){
-	
+    const int STRAIGHT = 0, LEFT = 1, RIGHT = 2, UTURN = 3;
+    prev_mouse_dir = NORTH;
+
 	//while the mouse has not find the center of the Maze
 	while(!detected_maze->is_center(mouse_x, mouse_y)){
 		move_one_cell();
+        printf("mouse direction: %d \n", direction);
+        
+    
+        
+        int state = 5;
+        
+        
+        
+        if (prev_mouse_dir == direction){
+            state = STRAIGHT;
+        }
+        // Mouse is facing south
+        else if (prev_mouse_dir == SOUTH && direction == NORTH) {
+            state = UTURN;
+            prev_mouse_dir = NORTH;
+        }
+        else if (prev_mouse_dir == SOUTH && direction == EAST) {
+            state = LEFT;
+            prev_mouse_dir = EAST;
+        }
+        else if (prev_mouse_dir == SOUTH && direction == WEST) {
+            state = RIGHT;
+            prev_mouse_dir = WEST;
+        }
+        // Mouse is facing north
+        else if (prev_mouse_dir == NORTH && direction == EAST) {
+            state = RIGHT;
+            prev_mouse_dir = EAST;
+        }
+        else if (prev_mouse_dir == NORTH && direction == WEST) {
+            state = LEFT;
+            prev_mouse_dir = WEST;
+        }
+        else if (prev_mouse_dir == NORTH && direction == SOUTH) {
+            state = UTURN;
+            prev_mouse_dir = SOUTH;
+        }
+        // Mouse is facing west
+        else if (prev_mouse_dir == WEST && direction == NORTH) {
+            state = RIGHT;
+            prev_mouse_dir = NORTH;
+        }
+        else if (prev_mouse_dir == WEST && direction == SOUTH) {
+            state = LEFT;
+            prev_mouse_dir = SOUTH;
+        }
+        else if (prev_mouse_dir == WEST && direction == EAST) {
+            state = UTURN;
+            prev_mouse_dir = EAST;
+        }
+        // Mouse is facing west
+        else if (prev_mouse_dir == EAST && direction == NORTH) {
+            state = LEFT;
+            prev_mouse_dir = NORTH;
+        }
+        else if (prev_mouse_dir == EAST && direction == SOUTH) {
+            state = RIGHT;
+            prev_mouse_dir = SOUTH;
+        }
+        else if (prev_mouse_dir == EAST && direction == WEST) {
+            state = UTURN;
+            prev_mouse_dir = WEST;
+        }
+        
+        if (state == 0) { printf("Mouse moving forward one cell.\n");}
+        if (state == 1) { printf("Mouse turning left.\n");}
+        if (state == 2) { printf("Mouse turning right\n");}
+        if (state == 3) { printf("Mouse making an uturn\n");}
+        // const int STRAIGHT = 0, LEFT = 1, RIGHT = 2, UTURN = 3;
         print_maze();
+        
 	}
 	
 
