@@ -1,0 +1,26 @@
+libcoregrind_amd64_darwin_a-m_aspacehl.o: m_aspacehl.c pub_core_basics.h \
+  ../include/pub_tool_basics.h ../VEX/pub/libvex_basictypes.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.1.0/include/stdarg.h \
+  pub_core_aspacemgr.h ../include/pub_tool_aspacemgr.h \
+  pub_core_mallocfree.h ../include/pub_tool_mallocfree.h \
+  pub_core_aspacehl.h ../include/pub_tool_aspacehl.h
+
+pub_core_basics.h:
+
+../include/pub_tool_basics.h:
+
+../VEX/pub/libvex_basictypes.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.1.0/include/stdarg.h:
+
+pub_core_aspacemgr.h:
+
+../include/pub_tool_aspacemgr.h:
+
+pub_core_mallocfree.h:
+
+../include/pub_tool_mallocfree.h:
+
+pub_core_aspacehl.h:
+
+../include/pub_tool_aspacehl.h:

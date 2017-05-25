@@ -1,15 +1,18 @@
 #include "Maze_solver.h"
 
+Mouse * my_mouse;
+
+
 //==============================================================
 Maze:: Maze(){
-	int goal1 = MAZE_SIZE / 2;
-    int goal2 = (MAZE_SIZE - 1) / 2;
-    for (int i = 0; i < MAZE_SIZE; i++) {
-        for (int j = 0; j < MAZE_SIZE; j++) {
+	unsigned char goal1 = MAZE_SIZE / 2;
+    unsigned char goal2 = (MAZE_SIZE - 1) / 2;
+    for (unsigned char i = 0; i < MAZE_SIZE; i++) {
+        for (unsigned char j = 0; j < MAZE_SIZE; j++) {
         // Distance of the cell will be the minimum distance to the closest
         // one out of four middle destination cells.
 
-            int min = min4(manhattan_dist(i, goal1, j, goal1),
+            unsigned char min = min4(manhattan_dist(i, goal1, j, goal1),
 	                       manhattan_dist(i, goal1, j, goal2),
 	                       manhattan_dist(i, goal2, j, goal1),
 	                       manhattan_dist(i, goal2, j, goal2));
@@ -26,7 +29,8 @@ Maze:: Maze(){
 
 }
 
-int Maze:: manhattan_dist(int x1, int x2, int y1, int y2) {
+unsigned char Maze:: manhattan_dist(unsigned char x1, unsigned char x2, 
+        unsigned char y1, unsigned char y2) {
     
     return abs(x1 - x2) + abs(y1 - y2);
 }
@@ -34,8 +38,8 @@ int Maze:: manhattan_dist(int x1, int x2, int y1, int y2) {
 
 // Function that takes the minimum of the four given distances
 
-int Maze:: min4(int a, int b, int c, int d) {
-    int min;
+unsigned char Maze:: min4(unsigned char a, unsigned char b, unsigned char c, unsigned char d) {
+    unsigned char min;
     (a < b) ? min = a : min = b;
     if (c < min) min = c;
     if (d < min) min = d;
@@ -70,6 +74,41 @@ void Maze:: load_maze(string file_name) {
         }
     }
 }
+
+// void Maze:: load_maze(string file_name) {
+//     ifstream file(file_name);
+//     string top, right;
+
+
+//     unsigned char row = MAZE_SIZE - 1;
+
+//     printf("row: %u mazesize: %u north: %u \n", row, MAZE_SIZE, NORTH);
+
+//     while (row >= 0) {
+//         getline(file, top);
+//         getline(file, right);
+//         for (unsigned char col = 0; col < MAZE_SIZE; col++) {
+//             maze[row][col] = new Cell(row, col, top[(col * 2) + 1] == '-', right[(col * 2) + 2] == '|');
+//         }
+//         row--;
+//     }
+
+//     unsigned char goal1 = MAZE_SIZE / 2;
+//     unsigned char goal2 = (MAZE_SIZE - 1) / 2;
+//  //   unsigned char s = 0;
+
+
+//     for (unsigned char i = 0; i < MAZE_SIZE; i++) {
+//         for (unsigned char j = 0; j < MAZE_SIZE; j++) {
+//             // Distance of the cell will be the minimum distance to the closest
+//             // one out of four middle destination cells.
+//             maze[i][j]->dist = min4(manhattan_dist(i, goal1, j, goal1),
+//                                     manhattan_dist(i, goal1, j, goal2),
+//                                     manhattan_dist(i, goal2, j, goal1),
+//                                     manhattan_dist(i, goal2, j, goal2));
+//         }
+//     }
+// }
 
 void Maze:: print_maze(){
     // print top wall
@@ -157,7 +196,7 @@ void Maze:: print_maze(){
                     printf("|");
                 }
 
-               	printf("   ");
+                printf("   ");
 
                 if (maze[y][j]->right_wall || j == MAZE_SIZE - 1) {
                     printf("|");
@@ -188,12 +227,12 @@ void Maze:: print_maze(){
 //This method will print Mouse position in the Maze
 void Maze:: print_maze(int mouse_x, int mouse_y, int dir){
 
-	if(mouse_x < 0 || mouse_y < 0){
-		printf("Mouse_x and Mouse_y cannot be less than 0\n");
-	}
+    if(mouse_x < 0 || mouse_y < 0){
+        printf("Mouse_x and Mouse_y cannot be less than 0\n");
+    }
 
 
-	    // print top wall
+        // print top wall
     for (int i = 0; i < MAZE_SIZE; i++) {
         cout << "+---";
     }
@@ -279,10 +318,10 @@ void Maze:: print_maze(int mouse_x, int mouse_y, int dir){
                 }
 
                 if(y == mouse_x && j == mouse_y){
-                	print_mouse(dir);
+                    print_mouse(dir);
                 } 
                 else{
-               		printf("   ");
+                    printf("   ");
                 }
 
                 if (maze[y][j]->right_wall || j == MAZE_SIZE - 1) {
@@ -313,37 +352,37 @@ void Maze:: print_maze(int mouse_x, int mouse_y, int dir){
 
 
 void Maze:: print_mouse(int dir){
-	if(dir == NORTH){
-		printf(" ^ ");
-	}
-	else if(dir == SOUTH){
-		printf(" V ");
-	}
-	else if(dir == WEST){
-		printf(" < ");
-	}
-	else{
-		printf(" > "); //EAST
-	}
-}
-
-bool Maze:: is_center(Cell *cell) {
-    int x = cell->x;
-    int y = cell->y;
-    int goal1 = MAZE_SIZE / 2;
-    int goal2 = (MAZE_SIZE - 1) / 2;
-    if (manhattan_dist(y, goal1, x, goal1) == 0 ||
-        manhattan_dist(y, goal1, x, goal2) == 0 ||
-        manhattan_dist(y, goal2, x, goal1) == 0 ||
-        manhattan_dist(y, goal2, x, goal2) == 0) {
-        return true;
+    if(dir == NORTH){
+        printf(" ^ ");
     }
-    return false;
+    else if(dir == SOUTH){
+        printf(" V ");
+    }
+    else if(dir == WEST){
+        printf(" < ");
+    }
+    else{
+        printf(" > "); //EAST
+    }
 }
 
-bool Maze:: is_center(int x, int y) {
-    int goal1 = MAZE_SIZE / 2;
-    int goal2 = (MAZE_SIZE - 1) / 2;
+// bool Maze:: is_center(Cell *cell) {
+//     unsigned char x = cell->x;
+//     unsigned char y = cell->y;
+//     unsigned char goal1 = MAZE_SIZE / 2;
+//     unsigned char goal2 = (MAZE_SIZE - 1) / 2;
+//     if (manhattan_dist(y, goal1, x, goal1) == 0 ||
+//         manhattan_dist(y, goal1, x, goal2) == 0 ||
+//         manhattan_dist(y, goal2, x, goal1) == 0 ||
+//         manhattan_dist(y, goal2, x, goal2) == 0) {
+//         return true;
+//     }
+//     return false;
+// }
+
+bool Maze:: is_center(unsigned char x, unsigned char y) {
+    unsigned char goal1 = MAZE_SIZE / 2;
+    unsigned char goal2 = (MAZE_SIZE - 1) / 2;
     if (manhattan_dist(y, goal1, x, goal1) == 0 ||
         manhattan_dist(y, goal1, x, goal2) == 0 ||
         manhattan_dist(y, goal2, x, goal1) == 0 ||
@@ -354,11 +393,11 @@ bool Maze:: is_center(int x, int y) {
 }
 
 //============================================================
-int Mouse:: get_direction(){
+unsigned char Mouse:: get_direction(){
     return direction;
 }
 
-void Mouse:: set_direction(int dir){
+void Mouse:: set_direction(unsigned char dir){
     direction = dir;
 }
 
@@ -583,7 +622,8 @@ void Mouse:: check_open_neighbor(){
 
 
 /* Check the minimum from a set of neighboring cells */
-int Mouse:: min_open_neighbor(vector<Cell*> cells) {
+unsigned char Mouse:: min_open_neighbor(vector<Cell*> cells) {
+    // TODO: replace
     int min = MAX;
     for (vector<Cell *>::iterator it = cells.begin(); it != cells.end(); it++) {
         if ((*it)->dist < min) {
@@ -599,10 +639,9 @@ void Mouse:: update_distance(){
     Cell * curr;
     vector<Cell*> neighbor;
     vector<Cell*> open_neighbor;
-    int min_dist;
-    int x, y;
-    int count = 0;
-
+    unsigned char min_dist;
+    unsigned char x, y;
+    unsigned char count = 0;
 
     stk.push_back(detected_maze->maze[mouse_x][mouse_y]);
 
@@ -658,11 +697,6 @@ void Mouse:: update_distance(){
         }
 
 
-  
-
-      
-
-     
 
         if (open_neighbor.empty()) {
             printf("This should never happen, error\n");
@@ -681,7 +715,8 @@ void Mouse:: update_distance(){
         if (curr->dist - 1 != min_dist) {
             curr->dist = min_dist + 1;
             for (vector<Cell *>::iterator it = neighbor.begin(); it != neighbor.end(); it++) {
-                if (!detected_maze->is_center(*it)) {
+                // tODO:
+                if (!detected_maze->is_center((*it)->x, (*it)->y)) {
                     stk.push_back(*it);
                 }
             }
@@ -743,7 +778,7 @@ void Mouse:: move_one_cell(){
     print_open_direction();
     
     int min_dist = MAX;
-    int temp;
+    unsigned char temp;
     if(north_open){
         temp = detected_maze->maze[mouse_x+1][mouse_y]->dist;
         if (temp < min_dist) {
@@ -827,7 +862,7 @@ void Mouse:: move_one_cell(){
 }
 
 void Mouse:: solve_maze(){
-    const int STRAIGHT = 0, LEFT = 1, RIGHT = 2, UTURN = 3;
+    const unsigned char STRAIGHT = 0, LEFT = 1, RIGHT = 2, UTURN = 3;
     prev_mouse_dir = NORTH;
 
 	//while the mouse has not find the center of the Maze
@@ -837,7 +872,7 @@ void Mouse:: solve_maze(){
         
     
         
-        int state = 5;
+        unsigned char state = 5;
         
         
         
@@ -901,7 +936,7 @@ void Mouse:: solve_maze(){
         if (state == 1) { printf("Mouse turning left.\n");}
         if (state == 2) { printf("Mouse turning right\n");}
         if (state == 3) { printf("Mouse making an uturn\n");}
-        // const int STRAIGHT = 0, LEFT = 1, RIGHT = 2, UTURN = 3;
+        // const unsigned char STRAIGHT = 0, LEFT = 1, RIGHT = 2, UTURN = 3;
         print_maze();
         
 	}
@@ -923,14 +958,12 @@ Mouse:: Mouse(){
     reference_maze = new Maze();  //we should not modify any thing inside reference_maze
     detected_maze = new Maze();
 
+    printf("Size of cell: %d \n", sizeof(*(reference_maze->maze[0][0])));
 }
 //==============================================================
 
-
-
-int main(){
-
-	Mouse * my_mouse = new Mouse();
+void solve_maze() {
+    my_mouse = new Mouse();
 
     printf("Maze Format: [Row, Col]. Size %d by %d\n", MAZE_SIZE, MAZE_SIZE);
     
@@ -956,15 +989,18 @@ int main(){
     //         break;
     //     }
     // }
+
+
+
     my_mouse->load_maze("apec2016.txt");
 
-	printf("Here is the inital Maze:\n"); 
+    printf("Here is the inital Maze:\n"); 
     my_mouse->print_reference_maze();
     
     printf("Let's see how the Mouse is going to solve it:\n");
 
-    for (int i = 0; i < MAZE_SIZE; i++){
-        for (int j = 0; j < MAZE_SIZE; j++){
+    for (unsigned char i = 0; i < MAZE_SIZE; i++){
+        for (unsigned char j = 0; j < MAZE_SIZE; j++){
             if(my_mouse->reference_maze->maze[i][j]->x != i || my_mouse->reference_maze->maze[i][j]->y != j){
                 printf("Supposed to be <%d,%d> but is <%d,%d>\n", i, j, my_mouse->reference_maze->maze[i][j]->x, my_mouse->reference_maze->maze[i][j]->y);
             } 
@@ -973,6 +1009,8 @@ int main(){
     }   
 
     my_mouse->solve_maze();
+
+
     
     // my_mouse->print_maze();     //<position <0,0>
     // my_mouse->move_one_cell();
@@ -997,6 +1035,10 @@ int main(){
 
 
     //my_mouse->test_sensor();
-    
+}
 
+int main(){
+    solve_maze();
+
+    delete my_mouse;
 }

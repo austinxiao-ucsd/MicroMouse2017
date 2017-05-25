@@ -2,14 +2,12 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include <cstdio>
-#include "math.h"
 using namespace std;
-const int MAZE_SIZE = 16;
-const int NORTH = 0;
-const int SOUTH = 1;
-const int WEST = 2; 
-const int EAST = 3;
+const unsigned char MAZE_SIZE = 16;
+const unsigned char NORTH = 0;
+const unsigned char SOUTH = 1;
+const unsigned char WEST = 2; 
+const unsigned char EAST = 3;
 const int MAX = 256;
 
 
@@ -20,17 +18,29 @@ const int MAX = 256;
 class Cell {
 
 public:
-    int y;
-    int x;
-    int dist;
-    bool top_wall;
-    bool right_wall;
-    bool visited;
-    bool hasMouse;
+    unsigned char x, y;
+    unsigned char dist;
+    bool top_wall, right_wall;
+    Cell(unsigned char x, unsigned char y, unsigned char dist) : 
+        x(x), y(y), dist(dist){ top_wall = right_wall = false; }
 
-    Cell(int x, int y) : y(y), x(x), dist(0), top_wall(false), right_wall(false), hasMouse(false){}
-    Cell(int x, int y, int dist) : y(y), x(x), dist(dist), top_wall(false), right_wall(false), hasMouse(false){}
-    Cell(int x, int y, bool top_wall, bool right_wall) : y(y), x(x), top_wall(top_wall), right_wall(right_wall), hasMouse(false){}
+
+    //TODO: DEBUG 
+    Cell(unsigned char x, unsigned char y, bool top_wall, bool right_wall) : x(x), y(y), top_wall(top_wall), right_wall(right_wall){}
+
+
+
+
+//     unsigned char y;
+//     unsigned char x;
+//     unsigned char dist;
+//     bool top_wall;
+//     bool right_wall;
+//     bool visited;
+//     bool hasMouse;
+
+//     Cell(unsigned char x, unsigned char y, unsigned char dist) : y(y), x(x), dist(dist), top_wall(false), right_wall(false), hasMouse(false){}
+//     Cell(unsigned char x, unsigned char y, bool top_wall, bool right_wall) : y(y), x(x), top_wall(top_wall), right_wall(right_wall), hasMouse(false){}
 };
 
 class Maze{
@@ -39,19 +49,23 @@ class Maze{
 
         Maze();
 
-        ~Maze();
+        ~Maze() {
+            // for (int i = 0; i < MAZE_SIZE; i++) {
+            //     // delete [] *maze[i];
+            //     for (int j = 0; j < MAZE_SIZE; j++){
+            //         delete maze[i][j];
+            //     }
+            //     delete * maze[i];
+            // }
+        };
 
-        int manhattan_dist(int x1, int x2, int y1, int y2);
+        unsigned char manhattan_dist(unsigned char x1, unsigned char x2, unsigned char y1, unsigned char y2);
 
-        int min4(int a, int b, int c, int d);
+        unsigned char min4(unsigned char a, unsigned char b, unsigned char c, unsigned char d);
 
-        //int min_open_neighbor(vector<Cell*> cells);
+        // bool is_center(Cell* cell);
 
-        //void update_distances(vector<Cell*> &stack);
-
-        bool is_center(Cell* cell);
-
-        bool is_center(int x, int y);
+        bool is_center(unsigned char x, unsigned char y);
 
         void print_maze(int x, int y, int dir);
 
@@ -61,55 +75,56 @@ class Maze{
 
        	void move();
 
-        //void explore(vector<Cell*> &stack, int y, int x);
-
         void load_maze(string file_name);
         
-        //Cell* next_move(Cell* cell);
-
-        //void print_path();
-
         Cell * maze[MAZE_SIZE][MAZE_SIZE];
-        
-        vector<Cell*> res;
 };
 
 class Mouse{
-	
-
 	public:
-		int direction; //initial direction is north
-
-        int next_cell_dir = 5;
-        int prev_mouse_dir;
+		unsigned char direction, next_cell_dir, prev_mouse_dir;
 
 		//the current position of Mouse, should be identical to the Cell'x and y
-		int mouse_x;
-		int mouse_y;
+		unsigned char mouse_x,  mouse_y;
+
+        unsigned char prev; // the previous direction, the previous direction is open by default
 
         //Those four variable indicates if the mouse can move in the certain direction
         bool north_open;
         bool south_open;
         bool east_open;
         bool west_open;
-
         bool front_sensor;
         bool left_sensor;
         bool right_sensor;
 
-        int prev; // the previous direction, the previous direction is open by default
-
 		Maze * reference_maze;
+
 		Maze * detected_maze;
 
 		std::vector <Cell*> stk; //vc was used as a stack to update the distance
 		
 		Mouse();
-		~Mouse();
+
+		~Mouse() {
+            for (int i = 0; i < MAZE_SIZE; i++) {
+                // delete [] *maze[i];
+                for (int j = 0; j < MAZE_SIZE; j++){
+                    delete detected_maze->maze[i][j];
+                    delete reference_maze->maze[i][j];
+                }
+                // delete detected_maze->maze[i];
+                // delete reference_maze->maze[i];
+            }
+
+
+            delete detected_maze;
+            delete reference_maze;
+        };
 		
-		void set_direction(int dir);
+		void set_direction(unsigned char dir);
 		
-		int get_direction();
+		unsigned char get_direction();
 
         void print_sensor_reading();
 
@@ -129,7 +144,7 @@ class Mouse{
 
         void update_distance();
 
-        int min_open_neighbor(vector<Cell*> cells);
+        unsigned char min_open_neighbor(vector<Cell*> cells);
 
         void check_open_neighbor();
 

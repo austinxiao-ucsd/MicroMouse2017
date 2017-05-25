@@ -1,0 +1,1 @@
+link ../ppc64/test_touch_tm.c

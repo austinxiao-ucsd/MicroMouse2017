@@ -1,0 +1,1 @@
+link ../ppc64/test_tm.c
