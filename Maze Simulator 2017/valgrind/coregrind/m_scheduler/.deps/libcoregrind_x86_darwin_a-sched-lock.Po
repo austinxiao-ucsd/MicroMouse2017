@@ -1,0 +1,32 @@
+m_scheduler/libcoregrind_x86_darwin_a-sched-lock.o: \
+  m_scheduler/sched-lock.c ../config.h pub_core_basics.h \
+  ../include/pub_tool_basics.h ../VEX/pub/libvex_basictypes.h \
+  /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.1.0/include/stdarg.h \
+  pub_core_libcbase.h ../include/pub_tool_libcbase.h \
+  pub_core_mallocfree.h ../include/pub_tool_mallocfree.h \
+  m_scheduler/priv_sema.h m_scheduler/priv_sched-lock.h \
+  m_scheduler/priv_sched-lock-impl.h
+
+../config.h:
+
+pub_core_basics.h:
+
+../include/pub_tool_basics.h:
+
+../VEX/pub/libvex_basictypes.h:
+
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../lib/clang/8.1.0/include/stdarg.h:
+
+pub_core_libcbase.h:
+
+../include/pub_tool_libcbase.h:
+
+pub_core_mallocfree.h:
+
+../include/pub_tool_mallocfree.h:
+
+m_scheduler/priv_sema.h:
+
+m_scheduler/priv_sched-lock.h:
+
+m_scheduler/priv_sched-lock-impl.h:
