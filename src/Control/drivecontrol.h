@@ -14,16 +14,16 @@ public:
     int x;
     //float total_error;
     DriveControl (int start_x, int start_y);
+    DriveControl () {};
+    
     ~DriveControl();
     
     int get_next_direction();
     
-    int get_next_state(int state);
-    
     // Stops both motors. Assume no coasting.
     void stop();
     
-    void getEncoder();
+    void print_serial_ports();
     
     void drive_forward();
     
@@ -42,5 +42,25 @@ public:
     bool has_right_wall();
     
     bool has_left_wall();
+    
+    void resetEncoders();
+    
+    void clear_pid();
+    
+    void set_wall_follower_speed();
+    
+    void set_wall_follower_sensor_thres();
+    
+    bool should_finish_turn_right();
+    
+    bool right_wall_pid_debug();
+    
+    bool should_finish_turn_left ();
+    
+    bool should_stop_drive_forward();
+    
+    bool should_finish_turn_around();
+    
+    bool should_finish_drive_forward();
 };
 #endif

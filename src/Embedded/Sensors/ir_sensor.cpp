@@ -2,31 +2,33 @@
 #include "ir_sensor.h"
 
 float IRSensor::readIR() {
-    float sum;
+    float value;
     _enable = 1;
     wait_us(60);
-    sum = _input.read();
+    value = _input.read();
     _enable = 0;
     wait_us(60);
+    
+    return value;
+    
+    /*
+    float sensor_arr [5];
     //Each duration takes 100us, 5 times = 0.5ms
-//    for (int i = 0; i < 5; i++)
-//    {
-//        //Turn on IR LED tx
-//        _enable = 1;
-//        //Wait for capacitor to fire, 10us
-//        wait_us(60);
-//        last_read[i] = _input.read_u16();
-//        if (i){
-//            sum += last_read[i];
-//        }
-//        //Wait 5us for turning off IR LED tx
-//        _enable = 0;
-//        //Wait 85us for turning on IR LED tx
-//        wait_us(60);
-//    }
-//    sum /= 80;
-//    value = sum;
-    return sum;
+    for (int i = 0; i < 5; i++)
+    {
+        float value;
+        _enable = 1;
+        wait_us(30);
+        sensor_arr[i] = _input.read();
+        _enable = 0;
+        wait_us(30);
+    }
+    float sum = 0.0f;
+    for (int i = 2; i < 5; i++) {
+        sum += sensor_arr[i];
+    }
+    
+    return sum/3;*/
 }
 
 //float IRSensor::cell_dist(){
