@@ -16,5 +16,3 @@ We plan to attend UCLA and UCSD MicroMouse competitions in Spring 2017.
 - Flood-Fill Algorithm
 - PID Control Algorithm
 - Embedded Systems
-## Design Specifications
-- TODO: Will update this section.
