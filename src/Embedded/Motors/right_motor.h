@@ -15,8 +15,4 @@ public:
         RightMotor::speed(speed);
     }
     
-private:
-    //float curr_speed;
-};
-
 #endif

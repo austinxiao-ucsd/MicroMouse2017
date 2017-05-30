@@ -11,15 +11,14 @@ DigitalOut led_3(PB_14);
 DigitalOut led_4(PB_15);
 Serial serial (PA_9, PA_10);
 
-// Algorithm Switch
+// ALGORITHM SWITCH
 DigitalIn alg_pin (PC_10);
 
 // CONTROL CONSTANTS
 const unsigned char  STRAIGHT = 0, LEFT = 1, RIGHT = 2, UTURN = 3;
 const int START_POS = 0, END_POS = 0;
 const int CONTROL = 1;
-unsigned char state; 
-int move = 0;
+unsigned char state;
 
 void check_battery () {
     // pc.baud(9600);
@@ -135,135 +134,10 @@ void run_flood_fill_algorithm() {
     }
 }
 
-void run_heuristic_wall_follower_algorithm() {
-    DriveControl * driver = new DriveControl (START_POS, END_POS);
-    driver->set_wall_follower_speed();
-    driver->set_wall_follower_sensor_thres();
-    driver->resetEncoders();
-    int state, count = 0;
-    int heuristic = 0;
-    bool finished_traverse_one_cell = true;
-    wait(1);
-    while(CONTROL) {
-       check_battery();
-       wait_ms(1);
-       if (finished_traverse_one_cell == true) {
-            heuristic ++;
-            if (heuristic % 10 == 0) {
-                if (!driver->has_front_wall()){
-                    wait(0.25);
-                    state = STRAIGHT;
-                    driver->resetEncoders();
-                }
-            }
-            if (!driver->has_right_wall() && !driver->has_left_wall()) {
-                if ((rand() % 3) == 1) {
-                    state = LEFT;
-                    driver->resetEncoders();
-                }
-                else {
-                    state = RIGHT;
-                    driver->resetEncoders();
-                }
-                wait(0.25);   
-            }
-            else if (!driver->has_right_wall()) {
-                wait(0.25);
-                state = RIGHT;  
-                driver->resetEncoders();
-            }
-            else if (!driver->has_left_wall()) {
-                wait(0.25);
-                state = LEFT;  
-                driver->resetEncoders();
-            }
-            else if(!driver->has_front_wall()){
-                state = STRAIGHT;
-                driver->resetEncoders();
-            }
-            else{
-                wait(0.25);
-                state = UTURN;
-                driver->resetEncoders();
-                count = 0;
-            }
-            finished_traverse_one_cell = false;
-        }
-        
-        if (state == STRAIGHT) {
-            if (!driver->should_finish_drive_forward() && !driver-> has_front_wall()) {
-                driver->drive_forward();
-                flash_led(1, 0, 0, 0);
-            }
-            else {
-                driver->stop();
-                driver->resetEncoders();
-                flash_led (0, 0, 0, 0);
-                finished_traverse_one_cell = true;
-                continue;
-            }
-        }
-        if (state == RIGHT) {
-            if (!driver->should_finish_turn_right()) {
-                driver->turn_right();
-                flash_led (0, 1, 0, 0);
-            }
-            else {
-                driver->stop();
-                flash_led (0, 0, 0, 0);
-                state = STRAIGHT;
-                driver->resetEncoders();
-                driver->clear_pid();
-                continue;
-            }
-        }
-        if (state == LEFT) {
-            if (!driver->should_finish_turn_left()) {
-                driver->turn_left();
-                flash_led (0, 0, 1, 0);
-            }
-            else {
-                driver->stop();
-                flash_led (0, 0, 0, 0);
-                state = STRAIGHT;
-                driver->resetEncoders();
-                driver->clear_pid();
-                continue;
-            }
-        }
-        
-        if (state == UTURN){
-            if (!driver->should_finish_turn_left()) {
-                driver->turn_left();
-                flash_led (0, 1, 1, 0);
-            }
-            else {
-                driver->stop();
-                driver->resetEncoders();
-                flash_led (0, 0, 0, 0);
-                if (count == 1) {
-                    finished_traverse_one_cell = true;
-                }
-                else {
-                    state = LEFT;
-                    wait(0.25);
-                    count++;
-                }
-                continue;
-            }
-        }
-    }
-}
-
 int main() {
     if (alg_pin) {
         flash_led(1,0,1,0);
         wait(2);
         run_flood_fill_algorithm();
-    }
-    else {
-        flash_led(1,1,1,0);
-        wait(2);
-        run_heuristic_wall_follower_algorithm();
-    }    
+    }   
 }

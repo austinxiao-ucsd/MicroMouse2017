@@ -14,10 +14,6 @@ public:
     // Calculate an estimated IR value
     float readIR();
 
-    //Get the number of cells away wall is
-//    short cell_dist();
-
-    //Shorthand for read()
     operator short() {
         return readIR();
     }
@@ -26,12 +22,6 @@ public:
 extern IRSensor rightIR;
 extern IRSensor rightDiagonalIR;
 extern IRSensor leftDiagonalIR;
-/*
-extern IRSensor rightDiagonalIR;
-extern IRSensor rightFrontIR;
-extern IRSensor leftFrontIR;
-extern IRSensor leftDiagonalIR;
-*/
 extern IRSensor leftIR;
 
 

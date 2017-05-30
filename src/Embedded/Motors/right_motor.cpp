@@ -21,10 +21,6 @@ void RightMotor::speed(float speed) {
     }
 }
 
-//void RightMotor::set_period(float period) {
-//    motor_right_sig.period(period);
-//}
-
 //Sets motor speed to 0
 void RightMotor::stop() {
     

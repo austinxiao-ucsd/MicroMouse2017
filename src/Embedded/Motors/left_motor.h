@@ -15,9 +15,4 @@ public:
     void operator = (float speed) {
         LeftMotor::speed(speed);
     }
-    
-private:
-    //float curr_speed;
-};
-
 #endif
